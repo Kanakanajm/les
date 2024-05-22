@@ -20,6 +20,17 @@ class JacobiSolver(Solver):
         Dinv = np.diag(1/np.diag(A)) # cannot use 1/D because off-diagonal elements will be divided by zero i.e. 1/0 = inf
         E = A - D
         B = -Dinv @ E
+
+        # spectral radius of B must be less than 1 for convergence
+        # this can be observed as following
+        # suppose xbar is the true solution, let x_k = xbar + e_k
+        # then x_{k+1}  = B(xbar + e_k) + z
+        #               = B xbar + B e_k + z
+        #               = xbar + B e_k (since B xbar + z = xbar)
+        # we got x_{k+1} - xbar = B e_k
+        # we got e_{k+1} = B e_k
+        assert np.linalg.eigvals(B).max() < 1
+
         z = Dinv @ b
 
         x0 = np.zeros_like(b)
